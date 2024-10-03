@@ -98,8 +98,7 @@ def handle_schedule_callback(call):
             send_scheduled_highlight, call.message)
         schedules[call.message.chat.id] = job
 
-        bot.send_message(call.message.chat.id, f"Scheduled random highlights every {
-                         interval} minutes!")
+        bot.send_message(call.message.chat.id, f"Scheduled to send a random highlight every {interval} minutes.")
     except Exception as e:
         bot.send_message(call.message.chat.id, f"Error scheduling: {e}")
 
