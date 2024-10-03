@@ -91,7 +91,7 @@ def handle_schedule_callback(call):
 
         # Clear any existing schedules for this chat
         if call.message.chat.id in schedules:
-            schedule.clear(schedules[call.message.chat.id])
+            schedule.cancel_job(schedules[call.message.chat.id])
 
         # Schedule a new job
         job = schedule.every(interval).minutes.do(
