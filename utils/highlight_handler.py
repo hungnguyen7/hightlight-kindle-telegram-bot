@@ -3,6 +3,9 @@ import json
 import random
 import os
 
+highlights_cache = None
+last_modified_time = None
+
 
 def process_and_store_highlights():
     # Read the txt file
@@ -55,19 +58,24 @@ def process_and_store_highlights():
 
 
 def load_random_highlight():
+    global highlights_cache, last_modified_time
 
-    if not os.path.exists("highlights.json"):
+    json_file_path = "highlights.json"
+
+    if not os.path.exists(json_file_path):
         return None
 
-    # Load the stored highlights from the JSON file
-    with open("highlights.json", 'r', encoding='utf-8') as json_file:
-        highlights = json.load(json_file)
+    # Get the last modified time of the file
+    current_modified_time = os.path.getmtime(json_file_path)
 
-    # Select a random highlight
-    random_highlight = random.choice(highlights)
+    # If cache is empty or the file has been modified since the last load, reload the file
+    if highlights_cache is None or current_modified_time != last_modified_time:
+        with open(json_file_path, 'r', encoding='utf-8') as json_file:
+            highlights_cache = json.load(json_file)
 
+        # Update the last modified time
+        last_modified_time = current_modified_time
+
+    # Select a random highlight from the cached highlights
+    random_highlight = random.choice(highlights_cache)
     return random_highlight
-
-
-if __name__ == "__main__":
-    process_and_store_highlights()
