@@ -33,7 +33,7 @@ def process_and_store_highlights():
         pre_proceeded_highlights.append(pre_proceed_highlight)
 
     highlights = []
-    # Adjusted regular expression to cover different cases
+
     pattern = r"^- Your (Highlight|Bookmark|Note) on (page [0-9]+ \| )?Location ([0-9]+(?:-[0-9]+)?) \| Added on (.*?)$"
     for highlight in pre_proceeded_highlights:
         match = re.findall(pattern, highlight[1], re.MULTILINE | re.DOTALL)
