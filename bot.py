@@ -17,8 +17,11 @@ bot = telebot.TeleBot(BOT_TOKEN)
 # * Initialize schedules database
 schedules_db = Schedules()
 
+live_jobs = {}
 
 # * Command handlers
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(
@@ -94,13 +97,14 @@ def handle_schedule_callback(call):
         schedule_data = schedules_db.get_schedule(call.message.chat.id)
         if schedule_data:
             schedules_db.delete_schedule(call.message.chat.id)
-            schedule.cancel_job(schedule_data['job'])
+            schedule.cancel_job(live_jobs[call.message.chat.id])
 
         # * Schedule a new job
         job = schedule.every(interval).minutes.do(
-            send_scheduled_highlight, call.message)
+            send_scheduled_highlight, call.message.chat.id)
+        live_jobs[call.message.chat.id] = job
 
-        schedules_db.add_schedule(call.message.chat.id, job)
+        schedules_db.add_schedule(call.message.chat.id, interval)
         bot.send_message(
             call.message.chat.id, f"Scheduled to send a random highlight every {interval} minutes.")
     except Exception as e:
@@ -113,20 +117,20 @@ def unschedule(message):
     schedule_data = schedules_db.get_schedule(message.chat.id)
     if schedule_data:
         schedules_db.delete_schedule(message.chat.id)
-        schedule.cancel_job(schedule_data['job'])
+        schedule.cancel_job(live_jobs[message.chat.id])
         bot.send_message(message.chat.id, "Your schedule has been deleted.")
     else:
         bot.send_message(message.chat.id, "No schedule found to delete.")
 
 
 # * Function to send scheduled highlights
-def send_scheduled_highlight(message):
+def send_scheduled_highlight(chat_id):
     try:
-        highlights = load_random_highlight(message.chat.id)
-        bot.send_message(message.chat.id, format_highlight(
+        highlights = load_random_highlight(chat_id)
+        bot.send_message(chat_id, format_highlight(
             highlights), parse_mode='Markdown')
     except Exception as e:
-        bot.send_message(message.chat.id, f"Error: {e}")
+        bot.send_message(chat_id, f"Error: {e}")
 
 
 # * Scheduler loop
@@ -135,8 +139,19 @@ def run_scheduler():
         schedule.run_pending()
 
 
+def rerun_schedules():
+    for schedule_data in schedules_db.get_all_schedules():
+        chat_id = schedule_data['_id']  # * chat_id is used as schedule_id
+        interval = schedule_data['interval']
+        print(f"Rerunning schedule for chat id {chat_id}, interval: {interval} minutes")
+        job = schedule.every(interval).minutes.do(
+            send_scheduled_highlight, chat_id)
+        live_jobs[chat_id] = job
+
+
 # * Run bot and scheduler
 if __name__ == "__main__":
     threading.Thread(target=run_scheduler, daemon=True).start()
     print("Bot is running...")
+    rerun_schedules()
     bot.infinity_polling()

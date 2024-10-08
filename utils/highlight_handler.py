@@ -58,7 +58,7 @@ def process_highlights(txt_file_path, json_file_path):
 
 
 def store_highlights(file_path, file_content):
-    with open(file_path, 'w', encoding='utf-8') as file:
+    with open(file_path, 'wb') as file:
         file.write(file_content)
 
 
@@ -81,18 +81,17 @@ def load_random_highlight(message_id):
         return None
 
     current_modified_time = os.path.getmtime(json_file_path)
-    last_modified_times = last_modified_times.get(message_id, 0)
 
     # * If the highlights are not cached or the file has been modified since the last cache then update the cache with the new highlights from the file
-    if message_id not in highlights_caches or current_modified_time > last_modified_times:
+    if message_id not in highlights_caches or current_modified_time > last_modified_times[message_id]:
         with open(json_file_path, 'r', encoding='utf-8') as json_file:
             highlights_caches[message_id] = json.load(json_file)
 
         # * Update the last modified time
         last_modified_times[message_id] = current_modified_time
 
-    # * Select a random highlight from the cached highlights
-    random_highlight = random.choice(highlights_caches)
+    # * Select a random highlight from the cached highlights based on the message_id
+    random_highlight = random.choice(highlights_caches[message_id])
     return random_highlight
 
 
