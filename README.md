@@ -1,20 +1,20 @@
-# Kindle Highlights Telegram Bot
+# 📚 Kindle Highlights Telegram Bot
 
 A simple Telegram bot that allows you to import highlighted text from Kindle to Telegram and receive random highlights as messages. You can schedule the bot to send you a random highlight at regular intervals, or manually request a highlight.
 
-## Features
+## ✨ Features
 
 - **Import Highlights**: Upload a `.txt` file containing your Kindle highlights, and the bot will process and store them.
 - **Receive Highlights**: Use commands to request random highlights from your imported collection.
 - **Scheduled Highlights**: Set up a schedule to receive random highlights at regular intervals (e.g., every 1 minute, 5 minutes, etc.).
 - **Manage Schedules**: Easily set or delete highlight schedules through bot commands.
 
-## Prerequisites
+## 📋 Prerequisites
 
 - Python 3.8+
 - A Telegram account and a Telegram Bot API token (see instructions below)
 
-## Getting Started
+## 🚀 Getting Started
 
 ### 1. Create a Bot
 
@@ -60,9 +60,9 @@ python bot.py
 
 The bot should now be running and ready to receive commands.
 
-## Usage
+## 📖 Usage
 
-### Commands
+### 📜 Commands
 
 The bot supports the following commands:
 
