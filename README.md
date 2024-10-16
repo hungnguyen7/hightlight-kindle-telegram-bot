@@ -60,8 +60,6 @@ python bot.py
 
 The bot should now be running and ready to receive commands.
 
-## 📖 Usage
-
 ### 📜 Commands
 
 The bot supports the following commands:
